@@ -11,6 +11,7 @@ receive and Identify NEC IR remote signal
 //#include <ESP8266WebServer.h>
 #include <osapi.h>
 #include <os_type.h>
+//#include <esp8266_peri.h>
 
 #define READY_TO_START          1
 #define COMPLETE_CODE_OBTAINED  2
@@ -29,6 +30,8 @@ static uint32_t current_time;
 static os_timer_t timer0;
 static uint16_t code[MAX_CODE_LENGTH];
 static uint16_t current_length;
+static char hex_data[MAX_HEX_DATA]; 
+static uint16_t hex_data_length=0;
 
 const uint16_t NEC_HEAD[] = {9000, 4500};
 const uint16_t NEC_HEAD_LENGTH=2;
@@ -37,8 +40,8 @@ const uint16_t NEC_FOOT_LENGTH=1;
 const uint16_t NEC_ZERO[] = {560, 560};
 const uint16_t NEC_ZERO_LENGTH=2;
 const uint16_t NEC_ONE[] = {560,1680};
-const uint16_t NEC_ONE_LENGTH=2; 
-
+const uint16_t NEC_ONE_LENGTH=2;
+  
 void IRAM_ATTR gpio_ISR()
 {
   uint32_t last_time;
@@ -146,9 +149,7 @@ uint8_t process_code()
   uint16_t current = head_length;
   uint16_t i=0;
   uint8_t bit_data[MAX_BIT_DATA];
-  char hex_data[MAX_HEX_DATA];
   uint16_t bit_data_length=0;
-  uint16_t hex_data_length=0;
   uint16_t a_hex_number;
   while(current < current_length-foot_length)
   {
@@ -203,31 +204,55 @@ uint8_t process_code()
   return 1; 
 }
 
-void setup()
+void init_receiver()
 {
-  Serial.begin(115200);
-  pinMode(RECEIVER_PIN, 0);//set receiver pin as input
   flag = READY_TO_START;
   current_time = micros();
   current_length=0;
   os_timer_setfn(&timer0, reinterpret_cast<os_timer_func_t *>(timer0_timeout_function), NULL);
   attachInterrupt(RECEIVER_PIN, gpio_ISR, CHANGE);
 }
-void loop() 
+
+void wait_for_signal()
 {
   if(flag!=COMPLETE_CODE_OBTAINED);//do nothing
   if(flag==COMPLETE_CODE_OBTAINED)
   {
-    Serial.print("\n");
-    if(process_code())
+    //Serial.print("Code obtained\n");
+    Serial.print("code[");Serial.print(current_length);Serial.print("]=");
+    for(uint16_t i=0; i<current_length; i++)
     {
-      Serial.print("code[");Serial.print(current_length);Serial.print("]=");
-      for(uint16_t i=0; i<current_length; i++)
-      {
-        Serial.print(code[i]);Serial.print(" ");
-      }
-      Serial.println("");//Serial.println("Data ready");
+      Serial.print(code[i]);Serial.print(" ");
+    }
+    Serial.println("");
+    if(!process_code())
+    {
+      Serial.println("Above is unknown code");
     }
     flag=READY_TO_START;
   }
 }
+/**
+ example of setup and loop
+
+ 
+void setup()
+{
+  //3 things to setup
+  //USART
+  //pin-output
+  //init_receiver();
+  
+  Serial.begin(115200);
+  
+  pinMode(RECEIVER_PIN, 0);//set receiver pin as input
+  //GPEC |= (1<<14);  doesn't work...
+  init_receiver();
+}
+
+void loop() 
+{
+  //wait_for_signal();
+  wait_for_signal(); 
+}
+**/
