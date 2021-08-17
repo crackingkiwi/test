@@ -4,11 +4,6 @@ receive and Identify NEC IR remote signal
 
 */
 
-//#include <ESP8266WiFi.h>
-//#include <WiFiClient.h>
-//#include <ESP8266WiFiMulti.h>
-//#include <ESP8266mDNS.h>
-//#include <ESP8266WebServer.h>
 #include <osapi.h>
 #include <os_type.h>
 //#include <esp8266_peri.h>
@@ -17,7 +12,7 @@ receive and Identify NEC IR remote signal
 #define COMPLETE_CODE_OBTAINED  2
 #define CODE_IS_COMING_IN       3
 
-#define RECEIVER_PIN            D5
+#define RECEIVER_PIN            14//D5= GPIO14
 #define TIME_OUT_TIME           25//milliseconds
 #define REPEAT_FLAG_NOREPEAT    0
 #define TOLERANCE               8 //12.5%

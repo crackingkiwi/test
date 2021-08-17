@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<center>
+	<head>
+		<h2>LED Control</h2>
+<!--		<link href='https://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
+		<link href='main.css' rel='stylesheet' type='text/css'>
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png">
+		<link rel="icon" type="image/png" sizes="144x144"  href="/favicon-144x144.png">
+		<link rel="icon" type="image/png" sizes="48x48" href="/favicon.ico">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="theme-color" content="#00878f">
+		<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport'>
+-->
+		<script src="WebSocket.js" type="text/javascript"></script>
+	</head>
+	</center>
+
+	<body>
+  		<form action="/initIRreceiver" method="POST">
+			<input type="submit" value="Receiver Start">
+		</form>
+		<p>Get the IR code history: </p>
+		<form action="/Codehistory" method="POST">
+			<input type="submit" value="Print_history">
+		</form>
+			<p>Upload a file: </p>
+		<form action="/upload" method="POST" enctype="multipart/form-data">
+		<input type="file" name="name">		   
+		<input class="button" type="submit" value="Upload">
+		</form>
+		<p> Set LED Dutycycle</p>	
+		<div>
+      			<table>
+        			<tr>
+				<td style="width:14.4px; text-align: right">LED: </td>
+				<td><input class="enabled" id="r" type="range" min="0" max="1023" step="1" oninput="getLEDdutycycle();" value="0"></td>
+				</tr>
+			</table>
+			<p style="margin:8px 0px">
+				<button id="toggleLED" class="button" style="background-color:#999" onclick="toggleled();">Toggle LED</button>
+			</p>
+		</div>
+	</body>
+</html>
